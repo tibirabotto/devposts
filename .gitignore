@@ -115,5 +115,5 @@ dist/
 
 ./google-services.json
 ./GoogleService-Info.plist
-
+.editorconfig
 # @end expo-cli
