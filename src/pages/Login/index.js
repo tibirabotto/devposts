@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Text } from "react-native";
+import React, { useState, useContext } from "react";
+import { Text, ActivityIndicator } from "react-native";
 import {
   Container,
   Title,
@@ -10,7 +10,10 @@ import {
   SignUpText,
 } from "./styles";
 
+import { AuthContext } from "../../contexts/auth";
+
 export default function Login() {
+  const { signUp, signIn, loadingAuth} = useContext(AuthContext);
   const [login, setLogin] = useState(true);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -18,25 +21,25 @@ export default function Login() {
 
   function toggleLogin() {
     setLogin(!login);
-    setName('')
-    setEmail('')
-    setPassword('')
+    setName("");
+    setEmail("");
+    setPassword("");
   }
 
   function handleSignUp() {
-    if (name === '' || email === '' || password === '') {
-      alert('Name/Email/Password required')
+    if (name === "" || email === "" || password === "") {
+      alert("Name/Email/Password required");
       return;
     }
-    alert("handleSignUp")
+    signUp(email, password, name);
   }
 
   function handleSignIn() {
-    if (email === '' || password === '') {
-      alert('Email/Password required')
+    if (email === "" || password === "") {
+      alert("Email/Password required");
       return;
     }
-    alert("handleSignIn")
+    signIn(email, password)
   }
 
   if (login) {
@@ -57,7 +60,11 @@ export default function Login() {
           value={password}
         />
         <Button onPress={handleSignIn}>
-          <ButtonText>Sign In</ButtonText>
+          {loadingAuth ? (
+            <ActivityIndicator size={20} color="#FFF" />
+          ) : (
+            <ButtonText>Sign In</ButtonText>
+          )}
         </Button>
 
         <SignUpButton onPress={toggleLogin}>
@@ -72,21 +79,24 @@ export default function Login() {
       <Title>
         Dev<Text style={{ color: "#E52246" }}>Post</Text>
       </Title>
-      <Input placeholder="Name" onChangeText={setName}
-          value={name} />
-     <Input
-          placeholder="email@email.com"
-          onChangeText={setEmail}
-          value={email}
-        />
-        <Input
-          placeholder="*****"
-          secureTextEntry
-          onChangeText={setPassword}
-          value={password}
-        />
+      <Input placeholder="Name" onChangeText={setName} value={name} />
+      <Input
+        placeholder="email@email.com"
+        onChangeText={setEmail}
+        value={email}
+      />
+      <Input
+        placeholder="*****"
+        secureTextEntry
+        onChangeText={setPassword}
+        value={password}
+      />
       <Button onPress={handleSignUp}>
-        <ButtonText>Sign Up</ButtonText>
+        {loadingAuth ? (
+          <ActivityIndicator size={20} color="#FFF" />
+        ) : (
+          <ButtonText>Sign Up</ButtonText>
+        )}
       </Button>
 
       <SignUpButton onPress={toggleLogin}>
