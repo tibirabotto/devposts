@@ -5,6 +5,25 @@
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "plugins": [
+      "@react-native-firebase/app",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ]
+    ],
+    "android": {
+      "package": "com.tibirabotto.devpost",
+      "googleServicesFile": "./google-services.json"
+    },
+    "ios": {
+      "bundleIdentifier": "com.tibirabotto.devpost",
+      "googleServicesFile": "./GoogleService-Info.plist"
+    }
   }
 }

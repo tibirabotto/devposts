@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "120356598517",
+    "project_id": "devpost-262d9",
+    "storage_bucket": "devpost-262d9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:120356598517:android:a98548db35d289bc9bcbbc",
+        "android_client_info": {
+          "package_name": "com.tibirabotto.devpost"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "120356598517-09to528h6r20i88hvltjm13q2l3uk5ou.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCotscgeiniX0LiaZd1aG31zBP-vgzieiw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "120356598517-09to528h6r20i88hvltjm13q2l3uk5ou.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

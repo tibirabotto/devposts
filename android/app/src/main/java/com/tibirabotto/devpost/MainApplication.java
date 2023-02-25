@@ -1,4 +1,4 @@
-package com.devpost;
+package com.tibirabotto.devpost;
 
 import android.app.Application;
 import android.content.res.Configuration;

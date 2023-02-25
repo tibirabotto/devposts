@@ -1,4 +1,4 @@
-package com.devpost;
+package com.tibirabotto.devpost;
 
 import android.os.Build;
 import android.os.Bundle;
