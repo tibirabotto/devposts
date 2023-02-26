@@ -12,7 +12,7 @@ function AuthProvider({ children }) {
 
   useEffect(() => {
     async function loadStorage() {
-      const storageUser = await AsyncStorage.getItem('devApp');
+      const storageUser = await AsyncStorage.getItem("devApp");
 
       if (storageUser) {
         setUser(JSON.parse(storageUser));
@@ -22,8 +22,8 @@ function AuthProvider({ children }) {
       setLoading(false);
     }
 
-    loadStorage()
-  },[])
+    loadStorage();
+  }, []);
 
   async function signUp(email, password, name) {
     setLoadingAuth(true);
@@ -71,8 +71,23 @@ function AuthProvider({ children }) {
         setUser(data);
         storageUser(data);
         setLoadingAuth(false);
-      }).catch((error) => {
+      })
+      .catch((error) => {
         setLoadingAuth(false);
+        console.log(error);
+      });
+  }
+
+  async function signOut() {
+    await auth()
+      .signOut()
+      .then(
+        async () =>
+          await AsyncStorage.clear().then(() => {
+            setUser(null);
+          })
+      )
+      .catch((error) => {
         console.log(error);
       });
   }
@@ -83,7 +98,15 @@ function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ signed: !!user, user, signUp, signIn, loadingAuth, loading }}
+      value={{
+        signed: !!user,
+        user,
+        signUp,
+        signIn,
+        signOut,
+        loadingAuth,
+        loading,
+      }}
     >
       {children}
     </AuthContext.Provider>
