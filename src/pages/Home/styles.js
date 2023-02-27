@@ -16,3 +16,9 @@ position: absolute;
 bottom: 6%;
 right: 6%;
 `;
+
+export const ListPosts = styled.FlatList`
+
+`;
+
+
