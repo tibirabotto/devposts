@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text } from "react-native";
-import {formatDistance} from 'date-fns'
+import firestore from "@react-native-firebase/firestore";
+import { formatDistance } from "date-fns";
 import {
   Container,
   Header,
@@ -14,14 +15,40 @@ import {
   TimePost,
 } from "./styles";
 import MaterialCommunityIcons from "react-native-vector-icons//MaterialCommunityIcons";
+import { da } from "date-fns/locale";
 export default function PostsList({ data, userId }) {
-
   function formatTimePost() {
-    const datePost = new Date(data.created.seconds * 1000)
-    return formatDistance(
-      new Date(),
-      datePost
-    )
+    const datePost = new Date(data.created.seconds * 1000);
+    return formatDistance(new Date(), datePost);
+  }
+
+  async function handleLike() {
+    const docId = `${userId}_${data.id}`;
+    const doc = await firestore().collection("likes").doc(docId).get();
+    if (doc.exists) {
+      await firestore()
+        .collection("posts")
+        .doc(data.id)
+        .update({
+          like: data.like - 1,
+        });
+      await firestore().collection("likes").doc(docId).delete();
+
+      return;
+    }
+
+    await firestore().collection('likes').doc(docId).set({
+      postId: data.id,
+      userId
+    })
+
+    await firestore()
+        .collection("posts")
+        .doc(data.id)
+        .update({
+          like: data.like + 1,
+        });
+
   }
 
   return (
@@ -40,12 +67,10 @@ export default function PostsList({ data, userId }) {
       </ContentView>
 
       <Actions>
-        <LikeButton>
-          <Like>
-            {data?.like === 0 ? '' : data?.like }
-          </Like>
+        <LikeButton onPress={handleLike}>
+          <Like>{data?.like === 0 ? "" : data?.like}</Like>
           <MaterialCommunityIcons
-            name={data?.like === 0 ? 'heart-plus-outline' : 'cards-heart'}
+            name={data?.like === 0 ? "heart-plus-outline" : "cards-heart"}
             size={20}
             color="#e52246"
           />
