@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import firestore from "@react-native-firebase/firestore";
 import { formatDistance } from "date-fns";
 import {
@@ -16,7 +17,10 @@ import {
 } from "./styles";
 import MaterialCommunityIcons from "react-native-vector-icons//MaterialCommunityIcons";
 import { da } from "date-fns/locale";
+
+
 export default function PostsList({ data, userId }) {
+  const navigation = useNavigation();
   function formatTimePost() {
     const datePost = new Date(data.created.seconds * 1000);
     return formatDistance(new Date(), datePost);
@@ -53,7 +57,7 @@ export default function PostsList({ data, userId }) {
 
   return (
     <Container>
-      <Header>
+      <Header onPress={() => navigation.navigate('PostsUser', {title: data.author, userId: userId})}>
         {data.avatarUrl ? (
           <Avatar source={{ uri: data.avatarUrl }} />
         ) : (
