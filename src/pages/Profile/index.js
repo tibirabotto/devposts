@@ -1,8 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import firestore from "@react-native-firebase/firestore";
+import storage from "@react-native-firebase/storage";
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import Feather from "react-native-vector-icons/Feather";
 import { AuthContext } from "../../contexts/auth";
-import { Modal } from "react-native";
+import { Modal, Platform } from "react-native";
 import {
   Container,
   UploadButton,
@@ -19,11 +21,54 @@ import {
 import Header from "../../components/Header";
 
 export default function Profile() {
-
   const { signOut, user, storageUser, setUser } = useContext(AuthContext);
   const [url, setUrl] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [input, setInput] = useState(user?.name);
+
+  useEffect(() => {
+    async function loadAvatar() {
+      try {
+        let response = await storage()
+          .ref("users")
+          .child(user?.uid)
+          .getDownloadURL();
+        setUrl(response);
+      } catch (error) {
+        console.log("ERRRO: Photo not found");
+      }
+    }
+
+    loadAvatar();
+  });
+
+  async function uploadFile() {
+    const options = {
+      noData: true,
+      mediaType: "photo",
+    };
+    await launchImageLibrary(options, (response) => {
+      if (response.didCancel) {
+        console.log(`Cancel the modal`);
+      } else if (response.errorCode) {
+        console.log(`ERROR: ${response.errorMessage}`);
+      } else {
+        uploadFileFirebase(response);
+        setUrl(response.assets[0].uri);
+      }
+    });
+  }
+
+  function getFileLocalPath(response) {
+    const { fileName, uri } = response.assets[0];
+    return Platform.OS === "android" ? uri : uri;
+  }
+
+  async function uploadFileFirebase(response) {
+    const fileSource = getFileLocalPath(response);
+    const storageRef = storage().ref("users").child(user?.uid);
+    await storageRef.putFile(fileSource);
+  }
 
   async function handleUpdateName() {
     if (input === "") {
@@ -36,33 +81,34 @@ export default function Profile() {
 
     const postDocs = await firestore()
       .collection("posts")
-      .where("userId", "==", user.uid).get();
-    postDocs.forEach( async doc => {
-      await firestore().collection('posts').doc(doc.id).update({
-        author: input
-      })
-    })
+      .where("userId", "==", user.uid)
+      .get();
+    postDocs.forEach(async (doc) => {
+      await firestore().collection("posts").doc(doc.id).update({
+        author: input,
+      });
+    });
     let data = {
       uid: user.uid,
       name: input,
-      email: user.email
-    }
-    setUser(data)
+      email: user.email,
+    };
+    setUser(data);
     storageUser(data);
 
-    setOpenModal(false)
+    setOpenModal(false);
   }
 
   return (
     <Container>
       <Header />
       {url ? (
-        <UploadButton onPress={() => console.log("Nice")}>
+        <UploadButton onPress={uploadFile}>
           <UpLoadText>+</UpLoadText>
           <Avatar source={{ uri: url }} />
         </UploadButton>
       ) : (
-        <UploadButton onPress={() => console.log("Nice")}>
+        <UploadButton onPress={uploadFile}>
           <UpLoadText>+</UpLoadText>
         </UploadButton>
       )}
