@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useRef} from "react";
 import { View, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import firestore from "@react-native-firebase/firestore";
@@ -15,12 +15,15 @@ import {
   Like,
   TimePost,
 } from "./styles";
+import * as Animatable from 'react-native-animatable';
+const HeartAnimated =  Animatable.createAnimatableComponent(MaterialCommunityIcons);
 import MaterialCommunityIcons from "react-native-vector-icons//MaterialCommunityIcons";
 import { da } from "date-fns/locale";
 
 
 export default function PostsList({ data, userId }) {
   const navigation = useNavigation();
+  const likeRef = useRef(null);
   function formatTimePost() {
     const datePost = new Date(data.created.seconds * 1000);
     return formatDistance(new Date(), datePost);
@@ -28,6 +31,7 @@ export default function PostsList({ data, userId }) {
 
   async function handleLike() {
     const docId = `${userId}_${data.id}`;
+    likeRef.current.rubberBand();
     const doc = await firestore().collection("likes").doc(docId).get();
     if (doc.exists) {
       await firestore()
@@ -73,7 +77,8 @@ export default function PostsList({ data, userId }) {
       <Actions>
         <LikeButton onPress={handleLike}>
           <Like>{data?.like === 0 ? "" : data?.like}</Like>
-          <MaterialCommunityIcons
+          <HeartAnimated
+            ref={likeRef}
             name={data?.like === 0 ? "heart-plus-outline" : "cards-heart"}
             size={20}
             color="#e52246"
