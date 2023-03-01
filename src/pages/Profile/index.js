@@ -141,7 +141,7 @@ export default function Profile() {
       </Button>
 
       <Modal visible={openModal} animationType="slide" transparent={true}>
-        <ModalContent>
+        <ModalContent behavior={Platform.OS === 'android' ? '' : 'padding'}>
           <ButtonBack onPress={() => setOpenModal(false)}>
             <Feather name="arrow-left" size={22} color="#121212" />
             <ButtonText color="#121212">Back</ButtonText>
