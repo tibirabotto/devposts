@@ -53,7 +53,10 @@ export default function Profile() {
       } else if (response.errorCode) {
         console.log(`ERROR: ${response.errorMessage}`);
       } else {
-        uploadFileFirebase(response);
+        uploadFileFirebase(response).then(() => {
+          uploadAvatarPosts();
+        })
+
         setUrl(response.assets[0].uri);
       }
     });
@@ -68,6 +71,20 @@ export default function Profile() {
     const fileSource = getFileLocalPath(response);
     const storageRef = storage().ref("users").child(user?.uid);
     await storageRef.putFile(fileSource);
+  }
+
+  async function uploadAvatarPosts() {
+    const storageRef = storage().ref('users').child(user?.uid);
+    const url = await storageRef.getDownloadURL().then( async image => {
+      const postDocs = await firestore().collection('posts').where('userId', "==", user.uid).get()
+      postDocs.forEach(async doc => {
+        await firestore().collection('posts').doc(doc.id).update({
+          avatarUrl: image
+        });
+      });
+    }).catch((error) => {
+      console.log(error)
+    })
   }
 
   async function handleUpdateName() {
